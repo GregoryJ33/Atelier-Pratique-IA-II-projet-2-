@@ -79,9 +79,8 @@ def run_mcts(env, iterations=60):
     if not root.children:
         return env.action_space.sample()
     
-    # On choisit l'action la plus visitée (plus stable que la valeur brute)
+    # On choisit l'action la plus visitée
     best_move_node = max(root.children, key=lambda n: n.visits)
-    
     return best_move_node.action
 
 
@@ -94,9 +93,7 @@ step_count = 0
 while not done:
     step_count += 1
     start_time = time.time()
-
     action = run_mcts(env, iterations=60) 
-    
     obs, reward, terminated, truncated, info = env.step(action)
     done = terminated or truncated
     
