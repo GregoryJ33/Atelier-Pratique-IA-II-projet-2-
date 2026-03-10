@@ -1,16 +1,24 @@
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+import gymnasium as gym
+import ale_py
+import numpy as np
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+env = gym.make("ALE/TicTacToe3D-v5", render_mode="human")
+
+def run_random_episode(env):
+    obs, info = env.reset()
+    terminated = False
+    truncated = False
+    total_reward = 0
+
+    while not (terminated or truncated):
+        action = env.action_space.sample()
+        obs, reward, terminated, truncated, info = env.step(action)
+        total_reward += reward
+
+    return total_reward
+
+for i in range(5):
+    reward = run_random_episode(env)
+    print(f"Essai {i} - Total reward: {reward}")
