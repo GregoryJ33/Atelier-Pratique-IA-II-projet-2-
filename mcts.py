@@ -4,6 +4,7 @@ import numpy as np
 import math
 import random
 import time
+from tqdm import tqdm
 
 np.bool8 = np.bool_
 
@@ -31,11 +32,11 @@ def run_mcts(env, iterations=60):
     actions = [1, 2, 3, 4, 5] # 1=Fire, 2=Up, 3=Right, 4=Left, 5=Down
     # (les autres commandes sont une combinaison de plusieurs commandes et 0=NoOperation)
 
-    for _ in range(iterations):
+    for _ in tqdm(range(iterations)):
         terminated, truncated, reward = False, False, 0
         node = root
 
-        # Premiere etape --> la selection : On descend dans l'arbre connu via UCT
+        # selection : On descend dans l'arbre connu via UCT
         while node.children:
             node = max(node.children, key=lambda n: uct_value(n, node.visits))
             _, reward, terminated, truncated, _ = env.step(node.action)
@@ -44,7 +45,7 @@ def run_mcts(env, iterations=60):
 
         reward = 0
 
-        # Deuxieme etape --> l'expansion : On ajoute des noeuds si la partie n'est pas finie
+        # expansion : On ajoute des noeuds si la partie n'est pas finie
         while not (terminated or truncated):
             # On ajoute toutes les actions possibles de l'émulateur
             for action in actions:
@@ -55,7 +56,7 @@ def run_mcts(env, iterations=60):
                 node = random.choice(node.children)
                 _, reward, terminated, truncated, _ = env.step(node.action)
 
-        # Quatrieme etape --> backpropagation : On remonte les scores en inversant les signes
+        # backpropagation : On remonte les scores en inversant les signes
         temp_node = node
         while temp_node is not None:
             temp_node.visits += 1
@@ -75,7 +76,7 @@ env = gym.make("ALE/TicTacToe3D-v5", render_mode=None)
 obs, _ = env.reset()
 
 start_time = time.time()
-root = run_mcts(env, iterations=1000)
+root = run_mcts(env, iterations=300)
 
 elapsed = time.time() - start_time
 print(f"Résultats :\tRoot value: {root.value} | Root visits: {root.visits} | Temps: {elapsed:.2f}s")
