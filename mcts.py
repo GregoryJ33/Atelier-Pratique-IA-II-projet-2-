@@ -47,7 +47,7 @@ def run_mcts(env, iterations=60):
 
         # expansion : On ajoute des noeuds si la partie n'est pas finie
         while not (terminated or truncated):
-            # On ajoute toutes les actions possibles de l'émulateur
+
             for action in actions:
                 node.children.append(MCTSNode(action=action, parent=node))
 
@@ -56,7 +56,7 @@ def run_mcts(env, iterations=60):
                 node = random.choice(node.children)
                 _, reward, terminated, truncated, _ = env.step(node.action)
 
-        # backpropagation : On remonte les scores en inversant les signes
+        # backpropagation : On remonte les scores
         temp_node = node
         while temp_node is not None:
             temp_node.visits += 1
@@ -76,7 +76,7 @@ env = gym.make("ALE/TicTacToe3D-v5", render_mode=None)
 obs, _ = env.reset()
 
 start_time = time.time()
-root = run_mcts(env, iterations=300)
+root = run_mcts(env, iterations=1000)
 
 elapsed = time.time() - start_time
 print(f"Résultats :\tRoot value: {root.value} | Root visits: {root.visits} | Temps: {elapsed:.2f}s")
